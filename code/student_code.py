@@ -31,13 +31,25 @@ def my_imfilter(image, filter):
 
     # Padding the image with zeros according to the size of the filter
     (im_row, im_col, im_height) = image.shape
-    row_pad_size = (im_row - 1) / 2
-    col_pad_size = (im_col - 1) / 2
-    row_padding = np.zeros(row_pad_size, im_col, im_height)
-    col_padding = np.zeros(im_row + 2 * row_pad_size, col_pad_size, im_height)
+    row_pad_size = (fil_row - 1) // 2
+    col_pad_size = (fil_col - 1) // 2
+    row_padding = np.zeros((row_pad_size, im_col, im_height))
+    col_padding = np.zeros((im_row + 2 * row_pad_size, col_pad_size, im_height))
+    padded_image = np.vstack((row_padding, image, row_padding))
+    padded_image = np.hstack((col_padding, padded_image, col_padding))
+    print("Filter shape: {} rows, {} cols".format(fil_row, fil_col))
+    print("Image shape: {} rows, {} cols, {} height".format(im_row, im_col, im_height))
+    print("Row padding: {} rows, {} cols, {} height".format(row_padding.shape[0], row_padding.shape[1], row_padding.shape[2]))
+    print("Col padding: {} rows, {} cols, {} height".format(col_padding.shape[0], col_padding.shape[1], col_padding.shape[2]))
+    print("Padded image: {} rows, {} cols, {} height".format(padded_image.shape[0], padded_image.shape[1], padded_image.shape[2]))
 
-    raise NotImplementedError('`my_imfilter` function in `student_code.py` ' +
-	    'needs to be implemented')
+    # Doing the filtering
+    padded_filter = filter[..., np.newaxis] # increases the number of dimensions before can broadcast
+    padded_filter = np.repeat(padded_filter, im_height, axis=2)
+
+    print(padded_filter.shape)
+    filtered_image = padded_image
+
 
     ### END OF STUDENT CODE ####
     ############################
