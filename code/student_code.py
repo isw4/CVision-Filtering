@@ -21,13 +21,14 @@ def my_imfilter(image, filter):
     - Remember these are RGB images, accounting for the final image dimension.
     """
 
-
     (fil_row, fil_col) = filter.shape
     assert fil_row % 2 == 1
     assert fil_col % 2 == 1
 
     ############################
     ### TODO: YOUR CODE HERE ###
+
+    ### TODO: Check for filter input sizes of (1,1)
 
     # Padding the image with zeros according to the size of the filter
     (im_row, im_col, im_height) = image.shape
@@ -37,19 +38,23 @@ def my_imfilter(image, filter):
     col_padding = np.zeros((im_row + 2 * row_pad_size, col_pad_size, im_height))
     padded_image = np.vstack((row_padding, image, row_padding))
     padded_image = np.hstack((col_padding, padded_image, col_padding))
-    print("Filter shape: {} rows, {} cols".format(fil_row, fil_col))
-    print("Image shape: {} rows, {} cols, {} height".format(im_row, im_col, im_height))
-    print("Row padding: {} rows, {} cols, {} height".format(row_padding.shape[0], row_padding.shape[1], row_padding.shape[2]))
-    print("Col padding: {} rows, {} cols, {} height".format(col_padding.shape[0], col_padding.shape[1], col_padding.shape[2]))
-    print("Padded image: {} rows, {} cols, {} height".format(padded_image.shape[0], padded_image.shape[1], padded_image.shape[2]))
+    # For debugging
+    # print("Filter shape: {} rows, {} cols".format(fil_row, fil_col))
+    # print("Image shape: {} rows, {} cols, {} height".format(im_row, im_col, im_height))
+    # print("Row padding: {} rows, {} cols, {} height".format(row_padding.shape[0], row_padding.shape[1], row_padding.shape[2]))
+    # print("Col padding: {} rows, {} cols, {} height".format(col_padding.shape[0], col_padding.shape[1], col_padding.shape[2]))
+    # print("Padded image: {} rows, {} cols, {} height".format(padded_image.shape[0], padded_image.shape[1], padded_image.shape[2]))
 
     # Doing the filtering
     padded_filter = filter[..., np.newaxis] # increases the number of dimensions before can broadcast
-    padded_filter = np.repeat(padded_filter, im_height, axis=2)
+    padded_filter = np.repeat(padded_filter, im_height, axis=2) # increase dimensions of the filter to match image
 
     print(padded_filter.shape)
-    filtered_image = padded_image
-
+    filtered_image = np.zeros(image.shape, dtype=image.dtype)
+    for i in range(0, im_row):
+        for j in range(0, im_col):
+             temp = np.multiply(padded_filter, padded_image[i:i+fil_row, j:j+fil_col, :])
+             filtered_image[i, j, :] = np.sum(temp, axis=(0, 1))
 
     ### END OF STUDENT CODE ####
     ############################
