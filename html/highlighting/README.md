@@ -83,7 +83,7 @@ Initialization using, for example, jQuery might look like this:
 
 ```javascript
 $(document).ready(function() {
-  $('pre code').each(function(i, e) {hljs.highlightBlock(e)});
+  $(src).each(function(i, e) {hljs.highlightBlock(e)});
 });
 ```
 

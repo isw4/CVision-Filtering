@@ -130,70 +130,143 @@ td img {
 <body>
 <div id="header" >
 <div id="headersub">
-<h1><span style="color: #DE3737">Your Name</span></h1>
+<h1><span style="color: #DE3737">Isaac Wong</span></h1>
 </div>
 </div>
 <div class="container">
+    <div>
+        <h2>Project 1: Image Filtering and Hybrid Images</h2>
 
-<h2>Project 1: Image Filtering and Hybrid Images</h2>
-
-<div style="float: right; padding: 20px">
-<img src="placeholder.jpg" />
-<p style="font-size: 14px">Example of a right floating element.</p>
-</div>
-
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-<ol>
-<li>list element 1.</li>
-<li>list element 2.</li>
-<li>etc.</li>
-</ol>
-
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-<div style="clear:both">
-<h3>Example heading</h3>
-
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-<h2>Example of code with highlighting</h2>
-The javascript in the <code>highlighting</code> folder is configured to do syntax highlighting in code blocks such as the one below.<p>
-
-<pre><code>
-%example code
-for i = 1:length(offset)
-    source = imread(sprintf('%s/source_%02d.jpg',data_dir,i));
-    mask   = imread(sprintf('%s/mask_%02d.jpg',data_dir,i));
-    target = imread(sprintf('%s/target_%02d.jpg',data_dir,i));
-
-</code></pre>
-
-<h3>Results in a table</h3>
-
-<table border=1>
-<tr>
-<td>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg"  width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
-</td>
-</tr>
-
-<tr>
-<td>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg"  width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
-<img src="placeholder.jpg" width="24%"/>
-</td>
-</tr>
-
-</table>
-
-<div style="clear:both" >
-<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-</div>
-</body>
-</html>
+        <h3>Image Filtering</h3>
+        <div style="float: right; padding: 20px">
+            <img height="280" src="../data/dog.bmp" />
+            <p style="font-size: 14px">Original</p>
+            <img height="280" src="../results/dog_blurred.jpg" />
+            <p style="font-size: 14px">Filtered (blurred)</p>
+        </div>
+        <p>
+            The image filtering function is implemented by correlating the image with the filter in the spatial domain.
+            Correlation works by overlaying the filter on top of the image, and then taking the sum of the
+            element-by-element product. The pixel where the center of the filter lies on top of is set to the value of
+            the result.
+        </p>
+        <p>
+            At the corners and borders of the image, there will be parts of the filter that do not lay on top of any
+            part of the image. This can be resolved by padding the image in several ways. The most straightforward
+            method is to pad the image with zeros (black). However, this introduces dark artifacts on the borders of
+            the image post-filtering. I have chosen in my implementation to pad the image with the reflection off the
+            borders/corners.
+        </p>
+        <p>
+            In addition, if there are multiple channels to the image, each channel needs to be filtered separately.
+            Overall, the implementation steps are:
+            <ol>
+            <li>Pad the image so that the filter can be centered on the corners without overhanging</li>
+            <li>For each channel, correlate the image with the filter for every pixel</li>
+            </ol>
+        </p>
+        <p>
+            On the right is an example of the image filtering with a Gaussian filter. The Gaussian is a low-pass filter,
+            which attenuates the high frequencies of the image and results in a blurry image.
+        </p>
+    </div>
+    <div style="clear: both">
+        <h3>Hybrid Images</h3>
+        <p>
+            The image hybridization function is implemented by multiplication in the frequency domain, which is
+            equivalent to convolution in the spatial domain. The hybridized image is composed of 2 parts: 1) the low
+            frequencies from one image, and 2) the high frequencies from the other image. The low frequencies can be
+            obtained by convolution with a low pass filter. The high frequencies can be obtained by first
+            convolving it with a low pass filter, and then subtracting the low frequencies from the original image.
+        </p>
+        <p>
+            Convolution was implemented by multiplication in the frequency domain. The steps are:
+            <ol>
+            <li>
+                Take the Fast Fourier Transform (fft) of the image. The output is a matrix with the same
+                dimensions as the image, and is generally made of complex numbers.
+            </li>
+            <li>
+                Take the fft of the filter. Since the output is a matrix with the same dimensions as the input, and
+                we want to element-wise multiply the output of step 1 with the output of this step, we must pad
+                the filter to make it the same size as the image. Here, I padded the filter on all sides with zeros.
+            </li>
+            <li>
+                Element-wise multiply the output of step 1 with the output of step 2. The output should be a matrix
+                with the same dimension as the original image.
+            </li>
+            <li>
+                Take the inverse Fast Fourier Transform (ifft) of the output from step 3. The result will be an image
+                that is "shifted". "Shifting" the image (swapping the 1st and 3rd, and the 2nd and 4th quadrants)
+                results in the convolved image. Below is an example of convolution with the same Gaussian filter as
+                before, showing also the shifted image after taking ifft.
+                <div style="float: left; padding: 20px">
+                    <img width="250" src="../data/submarine.bmp" />
+                    <p style="font-size: 14px">Original</p>
+                </div>
+                <div style="float: left; padding: 20px">
+                    <img width="250" src="../results/sub_shifted.jpg" />
+                    <p style="font-size: 14px">Filtered (before shifting)</p>
+                </div>
+                <div style="float: left; padding: 20px">
+                    <img width="250" src="../results/sub_blurred.jpg" />
+                    <p style="font-size: 14px">Filtered (after shifting)</p>
+                </div>
+            </li>
+            </ol>
+        </p>
+        <p>
+            Sharpening is equivalent to running the image through a high pass filter, or subtracting the low
+            frequencies from the original image. In the hybrid function, I implemented the latter by convolving the
+            image with a Gaussian filter to obtain the low frequencies, and then subtracting it element-wise from the
+            original image. The high frequencies remain, but the values of each pixel are also lower after the
+            subtraction.
+            <div style="float: left; padding: 20px">
+                <img width="260" src="../data/einstein.bmp" />
+                <p style="font-size: 14px">Original</p>
+            </div>
+            <div style="float: left; padding: 20px">
+                <img width="260" src="../results/einstein_high.jpg" />
+                <p style="font-size: 14px">Sharpened (before brightening)</p>
+            </div>
+            <div style="float: left; padding: 20px">
+                <img width="260" src="../results/einstein_high_boosted.jpg" />
+                <p style="font-size: 14px">Sharpened (after brightening)</p>
+            </div>
+        </p>
+        <p style="clear:both">
+            To obtain the hybrid image, I added the high frequencies of one image to the low frequencies of the other.
+            Since it's possible for the resultant image to have values less than 0 and more than 1 after both the
+            subtraction of the low frequencies from the image, and then the addition of the result to the low
+            frequencies of a different image, I had to ensure that the pixels remained from 0 to 1. I added the minimum
+            pixel value across the image to bring the minimum to 0, and then scaled the image down to 1 by dividing by
+            the maximum pixel value. Below are several visualizations of a hybrid images.
+        </p>
+        <div style="float: left; padding: 20px">
+            <img width="900" src="../results/einrilyn_vis.jpg" />
+            <p style="font-size: 14px">
+                Visualization of a hybrid of Einstein and Marilyn Monroe at "close" and "far" distances. At a
+                distance, the image looks more and more like Marilyn and less like Einstein.
+            </p>
+        </div>
+        <div style="float: left; padding: 20px">
+            <img width="900" src="../results/hybrid_image_scales.jpg" />
+            <p style="font-size: 14px">
+                Visualization of a hybrid of a cat and a dog at "close" and "far" distances. At a
+                distance, the image looks more and more like a dog and less like a cat.
+            </p>
+        </div>
+        <div style="float: left; padding: 20px">
+            <img width="900" src="../results/motorbike_vis.jpg" />
+            <p style="font-size: 14px">
+                Visualization of a hybrid of a bicycle and a motorcycle at "close" and "far" distances. At a
+                distance, the image looks more and more like a bicycle and less like a motorcycle.
+            </p>
+        </div>
+        <p>
+            The hybrid image looks like the low frequency component of the image at far distances, because we do not
+            pick up on as much high frequency detail at a distance. In comparison, we pick up on more high frequency
+            detail when close up, and so the hybrid image looks more like the high frequency component of the image
+            at a close range.
+        </p>
+    </div>
