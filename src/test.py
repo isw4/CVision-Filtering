@@ -6,9 +6,15 @@ import matplotlib.pyplot as plt
 from utils import vis_hybrid_image, load_image, save_image
 
 
-def plot_image(image):
+def plot_image(image, boost=0):
+	"""
+	Plots images, but needs plt.show() to be called outside the function to display all plots
+	:param image: numpy nd-array of dim (m, n, c) and range [0,1]. Anything outside will overflow
+	:param boost: float of range [0,1]. Will be added to the image before plotting
+	:return:
+	"""
 	plt.figure(figsize=(4, 4))
-	plt.imshow((image * 255).astype(np.uint8))
+	plt.imshow(((image + boost) * 255).astype(np.uint8))
 
 def test_my_filter(filter):
 	image1 = load_image('../data/dog.bmp')
@@ -84,7 +90,7 @@ def main():
 	# Testing create_hybrid_image function
 	low, high, hybrid = create_hybrid_image(image1, image2, filter)
 	plot_image(low)
-	plot_image(high)
+	plot_image(high, 0.5)
 	plot_image(hybrid)
 	plt.show()
 
