@@ -1,9 +1,9 @@
 import os
 import shutil
 
-def copy_directory(src, dest):
+def copy_directory(code, dest):
   try:
-    shutil.copytree(src, dest)
+    shutil.copytree(code, dest)
   except shutil.Error as e:
     print('Directory not copied. Error: %s' % e)
   except OSError as e:
